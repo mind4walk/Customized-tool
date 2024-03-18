@@ -41,7 +41,7 @@ apply_vimdiff_colors() {
 
     # Function to find vim colors directory
     find_vim_colors() {
-		local vim_dirs=($(find / -type d -name "vim[0-9]*" 2>/dev/null))
+		local vim_dirs=($(find /usr -type d -name "vim[0-9]*" 2>/dev/null))
 		for dir in "${vim_dirs[@]}"; do
 			if [[ -d "$dir/colors" ]]; then
 				echo "$dir/colors"
