@@ -2,24 +2,25 @@
 #
 # Make system more personal
 
-# Configuration variables, true=enable.
-#centos=true
-ubuntu=true
-install_pack=true
-apply_vim_settings=true
-apply_vimdiff_colors=true
+# Source external variables, true=enable.
+source param.sh
+
+# Set the path
+export VIMRC_PATH="/etc/vim/vimrc"
 
 # Function to install tmux, vim
 install_pack() {
-  local os_install_command=""
+  local command=""
 
-  if [[ "${ubuntu}" == "true" ]]; then
-    os_install_command="apt"
+  if [[ "${OS}" == "ubuntu" ]]; then
+    command="apt"
+  elif [[ "${OS}" == "ubuntu" ]]; then
+    command="yum"
   else
-    os_install_command="yum"
+    echo "The script only support ubuntu and centos command"
   fi
-  if [[ -n "${os_install_command}" ]]; then
-    sudo ${os_install_command} install tmux vim git wget -y
+  if [[ -n "${command}" ]]; then
+    sudo ${command} install tmux vim git wget -y
   fi
 
   # Increase the history log for tmux
@@ -29,9 +30,7 @@ install_pack() {
 
 # Function to apply Vim settings
 apply_vim_settings() {
-  VIMRC_PATH="/etc/vim/vimrc"
-
-  cat <<EOL >> "${VIMRC_PATH}"
+  cat << EOF >> "${VIMRC_PATH}"
 set cursorline
 
 " Color configuration - A.W.L.
@@ -39,7 +38,7 @@ set bg=dark
 color evening  " Same as :colorscheme evening
 hi LineNr cterm=bold ctermfg=DarkGrey ctermbg=NONE
 hi CursorLineNr cterm=bold ctermfg=Green ctermbg=NONE
-EOL
+EOF
 }
 
 # Function to apply Vimdiff colors
@@ -63,9 +62,6 @@ apply_vimdiff_colors() {
 
   local COLO_PATH=$(find_vim_colors)
 
-  if [[ -z "${COLO_PATH}" ]]; then
-    exit 1
-  fi
   cat << EOF > "${COLO_PATH}/${COLO_FILENAME}"
 " Re-writer: A.W.L.
 hi clear Normal
@@ -87,13 +83,13 @@ execute_task() {
   if [[ "${1}" == "true" ]]; then
     echo "*"
     echo "* ${2}"
-    echo "********************"
+    echo "********"
     shift 2
     "${@}"
   fi
 }
 
 # Main function
-execute_task "${install_pack}" "Install packages ..." install_pack
-execute_task "${apply_vim_settings}" "Modify vim settings ..." apply_vim_settings
-execute_task "${apply_vimdiff_colors}" "Add vimddiff colors ..." apply_vimdiff_colors
+execute_task "${INSTALL_PACK}" "Install packages ..." install_pack
+execute_task "${APPLY_VIM_SET}" "Modify vim settings ..." apply_vim_settings
+execute_task "${APPLY_VIMDIFF_COLO}" "Add vimddiff colors ..." apply_vimdiff_colors
